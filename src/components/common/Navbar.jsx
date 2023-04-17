@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { BsCameraVideoFill, BsClockHistory, BsHeartFill } from "react-icons/bs";
+import { BsClockHistory, BsHeartFill, BsStarFill } from "react-icons/bs";
 import useLogin from "../hooks/useLogin";
-import { FaUserCircle } from "react-icons/fa";
+import { FaBullhorn, FaClock, FaHandSparkles, FaSpeakerDeck, FaUserCircle } from "react-icons/fa";
 
-const Navbar = () => {
+const Navbar = ({ filter = "popular" }) => {
   const loginUser = useLogin();
   return (
     loginUser && (
@@ -14,11 +14,19 @@ const Navbar = () => {
         <div className="position-sticky pt-3 sidebar-sticky">
           <ul className="nav flex-column">
             <li className="nav-item">
-              <Link to="/movies" className="nav-link d-flex align-items-center">
+              <Link to="/popular" className="nav-link d-flex align-items-center">
                 <span className="d-flex align-items-center">
-                  <BsCameraVideoFill />
+                  <BsStarFill color="gold" />
                 </span>
-                <span className="mx-2">Movies</span>
+                <span className="mx-2">Popular</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/upcoming" className="nav-link d-flex align-items-center">
+                <span className="d-flex align-items-center">
+                  <FaBullhorn color="red"/>
+                </span>
+                <span className="mx-2">Upcoming</span>
               </Link>
             </li>
             {loginUser && (
@@ -29,7 +37,7 @@ const Navbar = () => {
                     className="nav-link d-flex align-items-center"
                   >
                     <span className="d-flex align-items-center">
-                      <BsClockHistory />
+                      <FaClock color="blue" />
                     </span>
                     <span className="mx-2">Watch list</span>
                   </Link>
@@ -40,7 +48,7 @@ const Navbar = () => {
                     className="nav-link d-flex align-items-center"
                   >
                     <span className="d-flex align-items-center">
-                      <BsHeartFill />
+                      <BsHeartFill color="red" />
                     </span>
                     <span className="mx-2">Favourites</span>
                   </Link>
@@ -49,11 +57,11 @@ const Navbar = () => {
             )}
           </ul>
 
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
+          <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
             <span>Personal info</span>
           </h6>
-          <ul class="nav flex-column mb-2">
-            <li class="nav-item">
+          <ul className="nav flex-column mb-2">
+            <li className="nav-item">
               <Link
                 to="/profile"
                 className="nav-link d-flex align-items-center"

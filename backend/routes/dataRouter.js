@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { corsWithOptions } = require("../cors");
-const { getData, updateUserInfo, setLike, addToWatch, getLikes, getWatchList, getUserInfo, removeLike, removeWatchList } = require("../controllers/data");
+const { getData, updateUserInfo, setFavourite, addToWatch, getFavourites, getWatchList, getUserInfo, removeFavourite, removeWatchList } = require("../controllers/data");
 const { isSignedIn } = require("../controllers/auth");
 
 const dataRouter = express.Router();
@@ -13,11 +13,11 @@ dataRouter
   .options(corsWithOptions, (_, res) => res.sendStatus(200))
   .get(corsWithOptions, isSignedIn, getData);
   
-  dataRouter.route('/likes')
+  dataRouter.route('/favourites')
   .options(corsWithOptions, (req, res) => res.sendStatus(200))
-  .get(corsWithOptions, isSignedIn, getLikes)
-  .post(corsWithOptions, isSignedIn, setLike)
-  .delete(corsWithOptions, isSignedIn, removeLike);
+  .get(corsWithOptions, isSignedIn, getFavourites)
+  .post(corsWithOptions, isSignedIn, setFavourite)
+  .delete(corsWithOptions, isSignedIn, removeFavourite);
 
 dataRouter.route('/watchlist')
   .options(corsWithOptions, (req, res) => res.sendStatus(200))

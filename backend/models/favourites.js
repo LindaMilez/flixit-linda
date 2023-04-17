@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var Likes = new Schema(
+var Favourites = new Schema(
   {
     movieId: {
       type: String,
@@ -22,4 +22,4 @@ var Likes = new Schema(
   }
 );
 
-module.exports = mongoose.model("Likes", Likes);
+module.exports = mongoose.model("Favourites", Favourites);

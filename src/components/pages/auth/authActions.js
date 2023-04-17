@@ -49,7 +49,7 @@ export const signInUser = (userData) => async (dispatch) => {
       url: "/auth/signin",
       data: userData,
     });
-    const { user, likes, watchlist, refreshToken, authToken } = signInDetails.data;
+    const { user, favourites, watchlist, refreshToken, authToken } = signInDetails.data;
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("refreshToken", refreshToken);
     setReqHeader('Authorization', authToken);
@@ -61,7 +61,7 @@ export const signInUser = (userData) => async (dispatch) => {
     dispatch({
       type: actionTypes.SET_PERSONAL_DATA,
       payload: {
-        likes, watchlist
+        favourites, watchlist
       }
     })
 

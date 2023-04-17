@@ -1,9 +1,9 @@
 import apiClient from "../utils/apiClient";
 
-export const addLike = async (movie) => {
+export const addFavourite = async (movie) => {
   await apiClient({
     method: "POST",
-    url: "/app/likes",
+    url: "/app/favourites",
     data: movie,
   });
 };
@@ -16,10 +16,10 @@ export const addWatchList = async (movie) => {
   });
 };
 
-export const removeLike = async (movieId) => {
+export const removeFavourite = async (movieId) => {
   await apiClient({
     method: "DELETE",
-    url: "/app/likes",
+    url: "/app/favourites",
     data: { movieId },
   });
 };

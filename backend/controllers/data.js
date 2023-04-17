@@ -1,4 +1,4 @@
-const Likes = require("../models/likes");
+const Favourites = require("../models/favourites");
 const User = require("../models/user");
 const Watchlist = require("../models/watchlist");
 
@@ -7,11 +7,16 @@ const getData = (_, res) => {
   res.json({ index });
 };
 
-const setLike = (req, res, next) => {
+const setFavourite = (req, res, next) => {
   const movie = req.body;
   movie.userId = req.user._doc._id;
-  console.log('RAM: LIKE', movie);
-  Likes.create(movie)
+  Favourites.findOne({ movieId: movie.movieId, userId: movie.userId })
+    .then(fav => {
+      if (!fav) {
+        return Favourites.create(movie);
+      }
+      return new Promise((yes, no) => yes(fav));
+    })
     .then((movie) => {
       const { _id, title } = movie;
       res.statusCode = 201;
@@ -20,19 +25,18 @@ const setLike = (req, res, next) => {
     })
     .catch((error) => {
       const err = new Error(error.message);
-      console.log('RAM: ERR: ', error);
       err.status = 500;
       next(err);
     });
 };
 
-const getLikes = (req, res, next) => {
+const getFavourites = (req, res, next) => {
   const userId = req.user._doc._id;
-  Likes.find({ userId: userId })
-    .then((likes) => {
-      res.statusCode = 201;
+  Favourites.find({ userId: userId })
+    .then((favourites) => {
+      res.statusCode = 200;
       res.setHeader("content-type", "application/json");
-      res.json(likes);
+      res.json(favourites);
     })
     .catch((error) => {
       const err = new Error(error.message);
@@ -41,18 +45,16 @@ const getLikes = (req, res, next) => {
     });
 };
 
-const removeLike = (req, res, next) => {
+const removeFavourite = (req, res, next) => {
   const { movieId } = req.body;
   const userId = req.user._doc._id;
-  Likes.findOneAndRemove({ userId: userId, movieId: movieId })
+  Favourites.findOneAndRemove({ userId: userId, movieId: movieId })
     .then(_ => {
-      console.log('RAM: REM: ', _);
       res.statusCode = 200;
       res.setHeader("content-type", "application/json");
       res.json({ success: true });
     })
     .catch(error => {
-      console.log('RAM: Error: ', error);
       const err = new Error(error.message);
       err.status = 500;
       next(err);
@@ -78,11 +80,10 @@ const removeWatchList = (req, res, next) => {
 
 const getPersonalData = async (userId) => {
   try {
-    const likes = await Likes.find({ userId: userId });
+    const favourites = await Favourites.find({ userId: userId });
     const watchlist = await Watchlist.find({ userId: userId });
-    return { likes, watchlist };
+    return { favourites, watchlist };
   } catch (error) {
-    console.log('Error:', error.message);
     return {};
   }
 }
@@ -91,7 +92,7 @@ const getWatchList = (req, res, next) => {
   const userId = req.user._doc._id;
   Watchlist.find({ userId: userId })
     .then((watchlist) => {
-      res.statusCode = 201;
+      res.statusCode = 200;
       res.setHeader("content-type", "application/json");
       res.json(watchlist);
     })
@@ -136,9 +137,13 @@ const updateUserInfo = (req, res, next) => {
 const addToWatch = (req, res, next) => {
   const movie = req.body;
   movie.userId = req.user._doc._id;
-
-  console.log("RAM: WATCH LIST", movie);
-  Watchlist.create(movie)
+  Watchlist.findOne({ movieId: movie.movieId, userId: movie.userId })
+    .then(mov => {
+      if (!mov) {
+        return Watchlist.create(movie);
+      }
+      return new Promise((yes, no) => yes(mov));
+    })
     .then((movie) => {
       const { _id, title } = movie;
       res.statusCode = 201;
@@ -152,4 +157,4 @@ const addToWatch = (req, res, next) => {
     });
 };
 
-module.exports = { getData, setLike, getLikes, addToWatch, getWatchList, getUserInfo, updateUserInfo, getPersonalData, removeLike, removeWatchList };
+module.exports = { getData, setFavourite, getFavourites, addToWatch, getWatchList, getUserInfo, updateUserInfo, getPersonalData, removeFavourite, removeWatchList };

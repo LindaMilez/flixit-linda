@@ -3,14 +3,14 @@ import { useParams } from "react-router-dom";
 import API from "../../API/API";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { actionTypes } from "../../store/movieReducer";
-import { Button } from "reactstrap";
+import { Button, Spinner } from "reactstrap";
 import { BsHeartFill, BsPlusCircleFill, BsYoutube } from "react-icons/bs";
 import { CircularProgressbar } from "react-circular-progressbar";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import {
-  addLike,
+  addFavourite,
   addWatchList,
-  removeLike,
+  removeFavourite,
   removeWatchList,
 } from "../../API/mongodb";
 import "react-circular-progressbar/dist/styles.css";
@@ -50,11 +50,14 @@ const MovieDetails = () => {
   const loginUser = useLogin();
   const [loading, setLoading] = useState(false);
   const [isVideoOpen, setVideoOpen] = useState(false);
+  const [removing, setRemoving] = useState({
+    favourite: false,
+    watchlist: false,
+  });
 
-  let { movie, likes, watchlist } = useSelector((state) => ({
-    // movieBasicInfo: state.movies.movies.find(mv => mv.id == movieId),
+  let { movie, favourites, watchlist } = useSelector((state) => ({
     movie: state.movies.moviesData[movieId],
-    likes: state.movies.likes,
+    favourites: state.movies.favourites,
     watchlist: state.movies.watchlist,
   }));
 
@@ -75,8 +78,8 @@ const MovieDetails = () => {
     : {};
 
   const isLiked = useMemo(() => {
-    return !!likes?.find?.((mv) => mv.movieId == movieId);
-  }, [likes, movieId]);
+    return !!favourites?.find?.((mv) => mv.movieId == movieId);
+  }, [favourites, movieId]);
 
   const inWatchList = useMemo(() => {
     return !!watchlist?.find?.((mv) => mv.movieId == movieId);
@@ -88,12 +91,12 @@ const MovieDetails = () => {
       const movie = await API.fetchMovie(movieId);
       const credits = await API.fetchCredits(movieId);
       const videos = await API.fetchVideos(movieId);
-  
+
       // Get directors only
       const directors = credits.crew.filter(
         (member) => member.job === "Director"
       );
-  
+
       dispatch({
         type: actionTypes.SET_MOVIE_DATA,
         movieId,
@@ -121,19 +124,24 @@ const MovieDetails = () => {
 
   const handleLike = async () => {
     try {
-      await (isLiked ? removeLike(movieId) : addLike(movieBasicInfo));
+      setRemoving({ ...removing, favourite: true });
+      await (isLiked ? removeFavourite(movieId) : addFavourite(movieBasicInfo));
       dispatch({
-        type: isLiked ? actionTypes.REMOVE_LIKE : actionTypes.ADD_LIKE,
+        type: isLiked
+          ? actionTypes.REMOVE_FAVOURITE
+          : actionTypes.ADD_FAVOURITE,
         payload: isLiked ? movieId : movieBasicInfo,
       });
     } catch (error) {
       toast(error.message);
       console.error(error);
     }
+    setRemoving({ ...removing, favourite: false });
   };
 
   const handleAddToWatch = async () => {
     try {
+      setRemoving({ ...removing, watchlist: true });
       await (inWatchList
         ? removeWatchList(movieId)
         : addWatchList(movieBasicInfo));
@@ -147,6 +155,7 @@ const MovieDetails = () => {
       toast(error.message);
       console.error(error);
     }
+    setRemoving({ ...removing, watchlist: false });
   };
 
   const teaserVideo = movie?.videos?.find?.(
@@ -190,13 +199,35 @@ const MovieDetails = () => {
               </div>
               {loginUser && (
                 <>
-                  <Button onClick={handleLike}>
-                    <BsHeartFill color={isLiked ? "red" : "black"} /> Like
+                  <Button onClick={handleLike} disabled={removing.favourite}>
+                    {removing.favourite ? (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        role="status"
+                        size="sm"
+                      />
+                    ) : (
+                      <BsHeartFill color={isLiked ? "red" : "black"} />
+                    )}{" "}
+                    <span>Like</span>
                     {isLiked && "d"}
                   </Button>
-                  <Button onClick={handleAddToWatch}>
-                    <BsPlusCircleFill color={inWatchList ? "red" : "black"} />{" "}
-                    Add to watch list
+                  <Button
+                    onClick={handleAddToWatch}
+                    disabled={removing.watchlist}
+                  >
+                    {removing.watchlist ? (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        role="status"
+                        size="sm"
+                      />
+                    ) : (
+                      <BsPlusCircleFill color={inWatchList ? "red" : "black"} />
+                    )}{" "}
+                    <span>Add to watch list</span>
                   </Button>
                 </>
               )}

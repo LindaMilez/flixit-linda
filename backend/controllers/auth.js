@@ -89,14 +89,14 @@ const signInUser = (req, res, next) => {
     .then(async (tokenDoc) => {
       const { token: refreshToken } = tokenDoc;
       const { username, email, _id } = signInUser;
-      const { likes, watchlist } = await getPersonalData(_id);
+      const { favourites, watchlist } = await getPersonalData(_id);
       const authToken = generateAuthToken(
         { username, email, _id },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: `${AUTH_TOKEN_EXPIRE_TIME}s` }
       );
       res.statusCode = 200;
-      res.json({ user: { username, email, _id }, likes, watchlist, refreshToken, authToken });
+      res.json({ user: { username, email, _id }, favourites, watchlist, refreshToken, authToken });
     })
     .catch((_) => {
       const err = new Error(

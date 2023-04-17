@@ -1,10 +1,10 @@
 // import movieData from "./movies.json";
 
 export const initialState = {
-  movies: [], // movieData.results,
+  popular: [], // movieData.results,
   moviesData: {},
   loading: false,
-  likes: [],
+  favourites: [],
   watchlist: []
 };
 
@@ -14,8 +14,8 @@ export const actionTypes = {
   GET_MOVIE_DATA: "GET_MOVIE_DATA",
   SET_MOVIE_DATA: "SET_MOVIE_DATA",
   SET_PERSONAL_DATA: "SET_PERSONAL_DATA",
-  ADD_LIKE: "ADD_LIKE",
-  REMOVE_LIKE: "REMOVE_LIKE",
+  ADD_FAVOURITE: "ADD_FAVOURITE",
+  REMOVE_FAVOURITE: "REMOVE_FAVOURITE",
   ADD_WATCH_LIST: "ADD_WATCH_LIST",
   REMOVE_WATCH_LIST: "REMOVE_WATCH_LIST",
 };
@@ -24,12 +24,12 @@ const reducer = (state = initialState, action) => {
   const newState = { ...state };
   switch (action.type) {
     case actionTypes.GET_MOVIES: {
-      newState.movies = [];
+      newState[action.category] = [];
       newState.loading = true;
       return newState;
     }
     case actionTypes.SET_MOVIES: {
-      newState.movies = action.payload;
+      newState[action.category] = action.payload;
       newState.loading = false;
       return newState;
     }
@@ -46,17 +46,17 @@ const reducer = (state = initialState, action) => {
     }
     case actionTypes.SET_PERSONAL_DATA: {
       newState.loading = false;
-      const { likes, watchlist } = action.payload;
-      newState.likes = likes;
+      const { favourites, watchlist } = action.payload;
+      newState.favourites = favourites;
       newState.watchlist = watchlist;
       return newState;
     }
-    case actionTypes.ADD_LIKE: {
-      newState.likes = [...newState.likes, action.payload]
+    case actionTypes.ADD_FAVOURITE: {
+      newState.favourites = [...newState.favourites, action.payload]
       return newState;
     }
-    case actionTypes.REMOVE_LIKE: {
-      newState.likes = newState.likes.filter(mv => mv.movieId !== action.payload)
+    case actionTypes.REMOVE_FAVOURITE: {
+      newState.favourites = newState.favourites.filter(mv => mv.movieId != action.payload)
       return newState;
     }
     case actionTypes.ADD_WATCH_LIST: {
@@ -64,7 +64,7 @@ const reducer = (state = initialState, action) => {
       return newState;
     }
     case actionTypes.REMOVE_WATCH_LIST: {
-      newState.watchlist = newState.watchlist.filter(mv => mv.movieId !== action.payload)
+      newState.watchlist = newState.watchlist.filter(mv => mv.movieId != action.payload)
       return newState;
     }
     default:

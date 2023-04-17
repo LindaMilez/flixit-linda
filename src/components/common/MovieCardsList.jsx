@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { BsFillTrash3Fill } from "react-icons/bs";
-import { FaSpinner } from "react-icons/fa";
+// import { FaSpinner } from "react-icons/fa";
 import API from "../../API/API";
 import { actionTypes } from "../../store/movieReducer";
-import { removeLike, removeWatchList } from "../../API/mongodb";
+import { removeFavourite, removeWatchList } from "../../API/mongodb";
 import { Container, Spinner } from "reactstrap";
 import { toast } from "react-toastify";
 
-const MovieCard = ({ movie, canRemove, onRemove, removingId }) => {
+export const MovieCard = ({ movie, canRemove, onRemove, removingId }) => {
   if (!movie.id) {
     movie.id = movie.movieId;
   }
@@ -22,7 +22,7 @@ const MovieCard = ({ movie, canRemove, onRemove, removingId }) => {
           style={{ width: 30, top: 10, right: 20, zIndex: 100 }}
         >
           {
-            removingId === movie.id ? <FaSpinner /> : <BsFillTrash3Fill size="small" />
+            removingId === movie.id ? <Spinner as="span" animation="border" role="status" size="sm" /> : <BsFillTrash3Fill size="small" />
           }
         </button>
       )}
@@ -44,19 +44,14 @@ const MovieCard = ({ movie, canRemove, onRemove, removingId }) => {
   );
 };
 
-const MovieCardsList = ({ filter }) => {
+const MovieCardsList = ({ filter = "popular" }) => {
   const dispatch = useDispatch();
   const { searchTerm } = useParams();
   const [removingId, setRemovingId] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const { movies, loading } = useSelector((state) => ({
-    loading: state.movies.loading,
-    movies:
-      filter === "all" || filter === "search"
-        ? state.movies.movies
-        : filter === "watchlist"
-        ? state.movies.watchlist
-        : state.movies.likes,
+  const { movies } = useSelector((state) => ({
+    movies: state.movies[filter]
   }));
 
   const onRemove = async (movieId) => {
@@ -64,12 +59,12 @@ const MovieCardsList = ({ filter }) => {
       setRemovingId(movieId);
       await (filter === "watchlist"
         ? removeWatchList(movieId)
-        : removeLike(movieId));
+        : removeFavourite(movieId));
       dispatch({
         type:
           filter === "watchlist"
             ? actionTypes.REMOVE_WATCH_LIST
-            : actionTypes.REMOVE_LIKE,
+            : actionTypes.REMOVE_FAVOURITE,
         payload: movieId,
       });
     } catch (error) {
@@ -80,26 +75,34 @@ const MovieCardsList = ({ filter }) => {
   };
 
   useEffect(() => {
-    const fetchMovies = async (searchTerm) => {
+    const fetchMovies = async () => {
       try {
-        const movies = await (searchTerm
-          ? API.serchMovies(searchTerm)
-          : API.fetchMovies());
+        setLoading(true)
+        let movies = [];
+        if (filter === "popular") {
+          movies = await API.fetchMovies();
+        } else if (filter === "upcoming") {
+          movies = await API.fetchUpcomingMovies();
+        } else if (filter === "search") {
+          movies = await API.serchMovies(searchTerm)
+        }
         dispatch({
           type: actionTypes.SET_MOVIES,
+          category: filter,
           payload: movies.results,
         });
       } catch (error) {
         console.error(error);
       }
+      setLoading(false);
     };
-    if (filter === "search" && searchTerm) {
-      fetchMovies(searchTerm);
-    }
-    if (filter === "all" && movies.length === 0) {
+    
+    if (filter !== "favourites" && filter !== "watchlist") {
       fetchMovies();
     }
-  }, [movies, filter, searchTerm]);
+
+    return () => setLoading(false);
+  }, [filter, searchTerm, dispatch]);
 
   if (loading) {
     return (

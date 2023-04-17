@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Private from "./components/wrappers/PrivateComponent";
 import Profile from "./components/pages/auth/Profile";
+import Favourites from "./components/common/Favourites";
 
 function App() {
   
@@ -48,10 +49,11 @@ function App() {
       <Router>
         <Header />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/movies" element={<Home filter="all" />} />
-            <Route path="/watchlist" element={<Home filter="watchlist" />} />
-            <Route path="/favourites" element={<Home filter="favourites" />} />
+            <Route path="/" element={<Home filter="popular" />} />
+            <Route path="/upcoming" element={<Home filter="upcoming" />} />
+            <Route path="/popular" element={<Home filter="popular" />} />
+            <Route path="/watchlist" element={<Favourites filter="watchlist" />} />
+            <Route path="/favourites" element={<Favourites filter="favourites" />} />
             <Route path="/search/:searchTerm" element={<Home filter="search" />} />
             <Route path="/movie/:movieId" element={<MovieDetails />}  />
             <Route path="/login" element={<Anonymous><Login /></Anonymous>}  />
