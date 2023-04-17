@@ -25,12 +25,6 @@ var User = new Schema(
     }, 
     postalCode: {
       type: String,
-    },
-    userId: {
-      type: String
-    },
-    picture: {
-      type: String
     }
   },
   {

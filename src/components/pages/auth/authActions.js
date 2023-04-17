@@ -15,6 +15,32 @@ export const registerUser = async (user) => {
   }
 };
 
+export const getSignInUser = async () => {
+  try {
+    const userData = await apiClient({
+      method: "GET",
+      url: "/app/user"
+    });
+    return userData.data;
+  } catch (error) {
+    throw new Error(error.response.data);
+  }
+}
+
+
+export const updateUserInfo = async (user) => {
+  try {
+    const userData = await apiClient({
+      method: "PUT",
+      url: "/app/user",
+      data: user
+    });
+    return userData.data;
+  } catch (error) {
+    throw new Error(error.response.data);
+  }
+}
+
 export const signInUser = (userData) => async (dispatch) => {
   dispatch({ type: authActions.AUTH_LOGIN_REQUEST });
   try {

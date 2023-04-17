@@ -1,4 +1,5 @@
 const Likes = require("../models/likes");
+const User = require("../models/user");
 const Watchlist = require("../models/watchlist");
 
 const getData = (_, res) => {
@@ -101,6 +102,37 @@ const getWatchList = (req, res, next) => {
     });
 };
 
+const getUserInfo = (req, res, next) => {
+  const userId = req.user._doc._id;
+  User.findById(userId)
+    .then(user => {
+      res.statusCode = 200;
+      res.setHeader("content-type", "application/json");
+      res.json(user);
+    })
+    .catch(error => {
+      const err = new Error(error.message);
+      err.status = 500;
+      next(err);
+    })
+}
+
+const updateUserInfo = (req, res, next) => {
+  const userId = req.user._doc._id;
+  const userInfo = req.body;
+  User.findByIdAndUpdate(userId, { ...userInfo })
+    .then(user => {
+      res.status = 200;
+      res.setHeader("content-type", "application/json");
+      res.json(user);
+    })
+    .catch(error => {
+      const err = new Error(error.message);
+      err.status = 500;
+      next(err);
+    })
+}
+
 const addToWatch = (req, res, next) => {
   const movie = req.body;
   movie.userId = req.user._doc._id;
@@ -120,4 +152,4 @@ const addToWatch = (req, res, next) => {
     });
 };
 
-module.exports = { getData, setLike, getLikes, addToWatch, getWatchList, getPersonalData, removeLike, removeWatchList };
+module.exports = { getData, setLike, getLikes, addToWatch, getWatchList, getUserInfo, updateUserInfo, getPersonalData, removeLike, removeWatchList };

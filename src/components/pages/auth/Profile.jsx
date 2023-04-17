@@ -1,29 +1,26 @@
 // reactstrap components
-import { useMemo, useState } from "react";
-import { FormFeedback } from "reactstrap";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { FormFeedback, Spinner } from "reactstrap";
 import { useForm } from "../../../utils/useForm";
-import { registerUser } from "./authActions";
+import { getSignInUser, updateUserInfo } from "./authActions";
 
 const Profile = () => {
   const [newUser, updateNewUser, onFocusOut] = useForm();
   
-  const {
-    username = {},
-    email = {},
-    password = {},
-    address = {},
-    city = {},
-    country = {},
-    postalCode = {},
-    picture = {},
-  } = newUser;
-
   const [loading, toggleLoading] = useState(false);
   const [formFeedback, setFeedback] = useState({});
+  const [oldUserData, setUserData] = useState({});
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userInfo = await getSignInUser();
+      setUserData(userInfo);
+    }
+    fetchUser();
+  }, [])
 
   const { fieldFeedback, isFormValid } = useMemo(() => {
-    const { username = {}, email = {}, password = {} } = newUser;
+    const { username = {}, email = {}, password = {}, address = {}, city = {}, country = {}, postalCode = {} } = newUser;
     const messages = {};
     let isFormValid = true;
     if (!username.value) {
@@ -38,6 +35,22 @@ const Profile = () => {
       messages.password = password.touched ? "Password is required" : "";
       isFormValid = false;
     }
+    if (!address.value) {
+      messages.address = address.touched ? "Address is required" : "";
+      isFormValid = false;
+    }
+    if (!city.value) {
+      messages.city = city.touched ? "City is required" : "";
+      isFormValid = false;
+    }
+    if (!country.value) {
+      messages.country = country.touched ? "Country is required" : "";
+      isFormValid = false;
+    }
+    if (!postalCode.value) {
+      messages.postalCode = postalCode.touched ? "Postal code is required" : "";
+      isFormValid = false;
+    }
     return { fieldFeedback: messages, isFormValid };
   }, [newUser]);
 
@@ -46,18 +59,21 @@ const Profile = () => {
     toggleLoading(true);
     setFeedback({});
     const {
-      username: { value: username },
-      password: { value: password },
-      email: { value: email },
+      username: { value: username } = {},
+      password: { value: password } = {},
+      email: { value: email } = {},
+      address: { value: address } = {},
+      city: { value: city } = {},
+      country: { value: country } = {},
+      postalCode: { value: postalCode } = {},
     } = newUser;
     try {
-      await registerUser({ username, password, email });
+      await updateUserInfo({ username, password, email, address, city, country, postalCode });
       setFeedback({
         type: "success",
         message: (
           <span>
-            User registration successful. Please proceed to{" "}
-            <Link to={"/login"}>Login</Link>
+            User information updated successfully.
           </span>
         ),
       });
@@ -72,13 +88,12 @@ const Profile = () => {
       <main className="form-signin w-100 m-auto">
         <form onSubmit={handleSubmit}>
           <h1 className="h3 mb-3 fw-normal text-center">Update user info</h1>
-
           <div className="form-floating">
             <input
               placeholder="Name"
               type="text"
               name="username"
-              value={username.value}
+              defaultValue={oldUserData.username}
               onChange={updateNewUser}
               onBlur={onFocusOut}
               formNoValidate
@@ -92,22 +107,22 @@ const Profile = () => {
               type="email"
               autoComplete="new-email"
               name="email"
-              value={email.value}
+              defaultValue={oldUserData.email}
               onChange={updateNewUser}
               onBlur={onFocusOut}
               invalid={!!fieldFeedback.email}
               className="form-control"
               placeholder="name@example.com"
             />
-            <label htmlFor="floatingInput">Email address</label>
+            <label htmlFor="floatingInput">Email</label>
           </div>
           <div className="form-floating">
             <input
               placeholder="Password"
               type="password"
+              defaultValue={oldUserData.password}
               autoComplete="new-password"
               name="password"
-              value={password.value}
               onChange={updateNewUser}
               onBlur={onFocusOut}
               invalid={!!fieldFeedback.password}
@@ -121,7 +136,7 @@ const Profile = () => {
               placeholder="Address"
               type="text"
               name="address"
-              value={address.value}
+              defaultValue={oldUserData.address}
               onChange={updateNewUser}
               onBlur={onFocusOut}
               formNoValidate
@@ -132,31 +147,45 @@ const Profile = () => {
           </div>
           <div className="form-floating">
             <input
-              type="email"
-              autoComplete="new-email"
-              name="email"
-              value={email.value}
+              type="text"
+              autoComplete="new-password"
+              name="city"
+              defaultValue={oldUserData.city}
               onChange={updateNewUser}
               onBlur={onFocusOut}
-              invalid={!!fieldFeedback.email}
+              invalid={!!fieldFeedback.city}
               className="form-control"
-              placeholder="name@example.com"
+              placeholder="City"
             />
-            <label htmlFor="floatingInput">Email address</label>
+            <label htmlFor="floatingInput">City</label>
           </div>
           <div className="form-floating">
             <input
-              placeholder="Password"
-              type="password"
+              placeholder="Country"
+              type="text"
               autoComplete="new-password"
-              name="password"
-              value={password.value}
+              name="country"
+              defaultValue={oldUserData.country}
               onChange={updateNewUser}
               onBlur={onFocusOut}
-              invalid={!!fieldFeedback.password}
+              invalid={!!fieldFeedback.country}
               className="form-control"
             />
-            <label htmlFor="floatingPassword">Password</label>
+            <label htmlFor="floatingPassword">Country</label>
+          </div>
+          <div className="form-floating">
+            <input
+              placeholder="Postalcode"
+              type="text"
+              autoComplete="new-password"
+              name="postalCode"
+              defaultValue={oldUserData.postalCode}
+              onChange={updateNewUser}
+              onBlur={onFocusOut}
+              invalid={!!fieldFeedback.postalCode}
+              className="form-control"
+            />
+            <label htmlFor="floatingPassword">Postal code</label>
           </div>
 
           {formFeedback.type && (
@@ -165,11 +194,17 @@ const Profile = () => {
             </FormFeedback>
           )}
           <button
-            disabled={!isFormValid || loading}
-            className="w-100 btn btn-lg btn-primary"
+            disabled={loading}
+            className="w-100 btn btn-lg btn-primary justify-content-center gap-3 d-flex align-items-center"
             type="submit"
           >
-            Update
+            {
+              loading && <Spinner as="span"
+              animation="border"
+              role="status"
+              size="sm" />
+            }
+            <span>Update</span>
           </button>
         </form>
       </main>
