@@ -130,6 +130,21 @@ const isSignedIn = (req, res, next) => {
   });
 };
 
+
+const optionalSignIn = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) {
+    return next();
+  } else {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) return next();
+      req.user = user;
+      next();
+    });
+  }
+};
+
 const refreshToken = (req, res) => {
   const { refreshToken } = req.body;
   if (refreshToken == null) return res.sendStatus(401);
@@ -172,5 +187,6 @@ module.exports = {
   signInUser,
   signOutUser,
   isSignedIn,
+  optionalSignIn,
   refreshToken,
 };

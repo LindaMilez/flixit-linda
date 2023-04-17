@@ -1,17 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import API from "../../API/API";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { actionTypes } from "../../store/movieReducer";
 import { Button, Spinner } from "reactstrap";
-import { BsHeartFill, BsPlusCircleFill, BsYoutube } from "react-icons/bs";
+import { BsHeartFill, BsPlusCircleFill, BsStar, BsStarFill, BsYoutube } from "react-icons/bs";
 import { CircularProgressbar } from "react-circular-progressbar";
+import Rating from "react-rating";
 import { toast } from "react-toastify";
+import API from "../../API/API";
+import { actionTypes } from "../../store/movieReducer";
 import {
   addFavourite,
   addWatchList,
+  getMovieRating,
   removeFavourite,
   removeWatchList,
+  setMovieRating,
 } from "../../API/mongodb";
 import "react-circular-progressbar/dist/styles.css";
 import useLogin from "../hooks/useLogin";
@@ -91,7 +94,7 @@ const MovieDetails = () => {
       const movie = await API.fetchMovie(movieId);
       const credits = await API.fetchCredits(movieId);
       const videos = await API.fetchVideos(movieId);
-
+      const rating = await getMovieRating(movieId);
       // Get directors only
       const directors = credits.crew.filter(
         (member) => member.job === "Director"
@@ -105,6 +108,7 @@ const MovieDetails = () => {
           actors: credits.cast,
           directors,
           videos: videos.results,
+          rating: rating
         },
       });
     } catch (error) {
@@ -158,10 +162,27 @@ const MovieDetails = () => {
     setRemoving({ ...removing, watchlist: false });
   };
 
+  const handleRating = async (val) => {
+    const newRating = await setMovieRating(movieId, val);
+    dispatch({
+      type: actionTypes.SET_MOVIE_DATA,
+      movieId,
+      payload: {
+        ...movie,
+        rating: newRating
+      },
+    });
+  }
+
   const teaserVideo = movie?.videos?.find?.(
     (v) => v.site === "YouTube" && v.type === "Teaser"
   );
 
+  const rating = {
+    average: movie?.rating?.aggregate[0]?.average || 0,
+    myrating: movie?.rating?.rating?.rating || 0
+  }
+  
   return (
     <div className="container my-5">
       {loading ? (
@@ -197,9 +218,9 @@ const MovieDetails = () => {
                 />
                 <span>User score</span>
               </div>
-              {loginUser && (
-                <>
-                  <Button onClick={handleLike} disabled={removing.favourite}>
+              {/* {loginUser && (
+                <> */}
+                  <Button onClick={handleLike} disabled={removing.favourite || !loginUser}>
                     {removing.favourite ? (
                       <Spinner
                         as="span"
@@ -210,12 +231,12 @@ const MovieDetails = () => {
                     ) : (
                       <BsHeartFill color={isLiked ? "red" : "black"} />
                     )}{" "}
-                    <span>Like</span>
+                    <span title={!loginUser && "Signin required"}>Like</span>
                     {isLiked && "d"}
                   </Button>
                   <Button
                     onClick={handleAddToWatch}
-                    disabled={removing.watchlist}
+                    disabled={removing.watchlist || !loginUser}
                   >
                     {removing.watchlist ? (
                       <Spinner
@@ -227,10 +248,16 @@ const MovieDetails = () => {
                     ) : (
                       <BsPlusCircleFill color={inWatchList ? "red" : "black"} />
                     )}{" "}
-                    <span>Add to watch list</span>
+                    <span title={!loginUser && "Signin required"}>Add to watch list</span>
                   </Button>
-                </>
-              )}
+                {/* </>
+              )} */}
+              <div
+                style={{ height: 50, fontSize: '2rem', backgroundColor: "#3b4ff83b" }}
+                className="px-3 rounded d-flex fw-bold justify-content-center align-items-center"
+              >
+                { rating.average } / 5
+              </div>
             </div>
             {teaserVideo && (
               <div className="gap-3 d-flex mt-3">
@@ -244,6 +271,10 @@ const MovieDetails = () => {
                 />
               </div>
             )}
+            <div className="d-flex flex-column mt-3" title={!loginUser && "Signin required"}>
+              <span>My Rating</span>
+              <Rating readonly={!loginUser} onChange={handleRating} placeholderRating={rating.myrating} placeholderSymbol={<BsStarFill size="30" color="gold" />} fullSymbol={<BsStarFill size="30" color="gold" />} emptySymbol={<BsStar size="30" />} />
+            </div>
           </div>
           <div
             className="col-lg-5 p-0 overflow-hidden shadow-lg rounded-lg-3"

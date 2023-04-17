@@ -31,3 +31,20 @@ export const removeWatchList = async (movieId) => {
     data: { movieId },
   });
 };
+
+export const setMovieRating = async (movieId, rating) => {
+  const response = await apiClient({
+    method: "POST",
+    url: "/app/rating",
+    data: { movieId, rating },
+  });
+  return response.data;
+}
+
+export const getMovieRating = async (movieId) => {
+  const respose = await apiClient({
+    method: "GET",
+    url: `/app/rating/${movieId}`
+  });
+  return respose.data;
+}
