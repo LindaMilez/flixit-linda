@@ -46,7 +46,7 @@ const ContactUs = () => {
         data: { name, email, query },
       });
       console.log("Enquery details: ", response.data);
-      toast(`Enquiry saved successfully.`, { type: "success" });
+      toast(`Enquiry received successfully. \n we will reach you asap.`, { type: "success" });
     } catch (error) {
       toast(error.message, { type: "error" });
     }
@@ -57,12 +57,24 @@ const ContactUs = () => {
     <div class="container col-xl-10 col-xxl-8 px-4 py-5">
       <div class="row align-items-center g-lg-5 py-5">
         <div class="col-lg-7 text-center text-lg-start">
-          <h1 class="display-4 fw-bold lh-1 mb-3">Contact Us</h1>
-          <p class="col-lg-10 fs-4 mb-0">
-            Please enter your details in the form.
+          <h1 class="display-6 fw-bold lh-2 mb-3">About Us</h1>
+          <p class="col-lg-10 fs-6 mb-2">
+            Welcome to our Flixit website! Here, we are dedicated to providing
+            you with the latest news, reviews, and trailers for all of your
+            favorite movies.
           </p>
-          <p class="col-lg-10 mb-0 fs-4">
-            We will reach out to you at the earliest.
+          <p class="col-lg-10 fs-6 mb-2">
+            Our team of passionate movie enthusiasts works tirelessly to bring
+            you the most up-to-date information on the biggest blockbusters, as
+            well as the hidden gems that you might have missed.
+          </p>
+          <p class="col-lg-10 fs-6 mb-2">
+            Thank you for visiting our website, and we hope you enjoy exploring
+            all that we have to offer!
+          </p>
+          <p class="col-lg-10 fs-6 mb-2">
+            We are group of student developers. We built this platform for
+            learning full stack development. This platfor
           </p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
@@ -70,6 +82,7 @@ const ContactUs = () => {
             class="p-4 p-md-5 border rounded-3 bg-light"
             onSubmit={handleSubmit}
           >
+          <h2 class="fs-3 lh-2 mb-3">Contact Us</h2>
             <div class="form-floating mb-3">
               <input
                 type="text"
@@ -119,7 +132,6 @@ const ContactUs = () => {
               )}
               <span>Send Enquery</span>
             </button>
-            <hr class="my-4" />
           </form>
         </div>
       </div>

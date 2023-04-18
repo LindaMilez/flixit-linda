@@ -40,16 +40,28 @@ const Header = ({ dispatchSignOut }) => {
         onChange={({ currentTarget }) => setSearchTerm(currentTarget.value)}
         onKeyPress={handleKeyPress}
       />
-      {!user.email && (
-        <ul class="navbar-nav mb-md-0 mx-3">
-          <li class="nav-item">
-            <Link to="/contactus" className="nav-link" style={{ width: 80 }}>
+      <div className="navbar-nav flex-row px-3">
+        {!user.email && (
+          <div className="nav-item text-nowrap">
+            <Link to="/contactus" className="nav-link">
               Contact Us
             </Link>
-          </li>
-        </ul>
-      )}
-      <div className="navbar-nav">
+          </div>
+        )}
+        <div className="nav-item text-nowrap">
+          {!user.email && (
+            <button
+              className="border-0 bg-dark nav-link px-3"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/register");
+              }}
+            >
+              Register
+            </button>
+          )}
+        </div>
         <div className="nav-item text-nowrap">
           {user.email ? (
             <button
