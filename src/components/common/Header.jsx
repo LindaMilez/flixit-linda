@@ -5,15 +5,15 @@ import useLogin from "../hooks/useLogin";
 import { useState } from "react";
 
 const Header = ({ dispatchSignOut }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const user = useLogin();
 
   const handleKeyPress = (event) => {
-    if(event.key === 'Enter'){
+    if (event.key === "Enter") {
       navigate(`/search/${searchTerm}`);
     }
-  }
+  };
 
   return (
     <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -37,33 +37,43 @@ const Header = ({ dispatchSignOut }) => {
         placeholder="Search"
         aria-label="Search"
         value={searchTerm}
-        onChange={({ currentTarget }) => setSearchTerm(currentTarget.value) }
+        onChange={({ currentTarget }) => setSearchTerm(currentTarget.value)}
         onKeyPress={handleKeyPress}
       />
+      {!user.email && (
+        <ul class="navbar-nav mb-md-0 mx-3">
+          <li class="nav-item">
+            <Link to="/contactus" className="nav-link" style={{ width: 80 }}>
+              Contact Us
+            </Link>
+          </li>
+        </ul>
+      )}
       <div className="navbar-nav">
         <div className="nav-item text-nowrap">
-          {
-            user.email ? <button
-            className="border-0 bg-dark nav-link px-3"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatchSignOut();
-            }}
-          >
-            Sign out
-          </button> : <button
-            className="border-0 bg-dark nav-link px-3"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate('/login')
-            }}
-          >
-            Sign In
-          </button>
-          }
-          
+          {user.email ? (
+            <button
+              className="border-0 bg-dark nav-link px-3"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatchSignOut();
+              }}
+            >
+              Sign out
+            </button>
+          ) : (
+            <button
+              className="border-0 bg-dark nav-link px-3"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/login");
+              }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </div>
     </header>
@@ -75,7 +85,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  dispatchSignOut: () => dispatch(signOutUser())
+  dispatchSignOut: () => dispatch(signOutUser()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

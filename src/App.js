@@ -60,7 +60,7 @@ function App() {
             <Route path="/movie/:movieId" element={<MovieDetails />} />
             <Route path="/login" element={<Anonymous><Login /></Anonymous>} />
             <Route path="/register" element={<Anonymous><Register /></Anonymous>} />
-            <Route path="/profile" element={<Private><Profile /></Private>} />
+            <Route path="/profile" element={<Private><Profile filter="profile" /></Private>} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contactus" element={<ContactUs />} />
             {/* <Route path="/*" element={<NotFound />} />
