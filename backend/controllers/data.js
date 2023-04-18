@@ -1,3 +1,4 @@
+const Enquiry = require("../models/enquiry");
 const Favourites = require("../models/favourites");
 const User = require("../models/user");
 const Watchlist = require("../models/watchlist");
@@ -157,4 +158,20 @@ const addToWatch = (req, res, next) => {
     });
 };
 
-module.exports = { getData, setFavourite, getFavourites, addToWatch, getWatchList, getUserInfo, updateUserInfo, getPersonalData, removeFavourite, removeWatchList };
+const saveEnquiry = (req, res, next) => {
+  const enquiry = req.body;
+  Enquiry.create(enquiry)
+    .then((enq) => {
+      const { _id } = enq;
+      res.statusCode = 201;
+      res.setHeader("content-type", "application/json");
+      res.json({ _id });
+    })
+    .catch((error) => {
+      const err = new Error(error.message);
+      err.status = 500;
+      next(err);
+    });
+}
+
+module.exports = { getData, saveEnquiry, setFavourite, getFavourites, addToWatch, getWatchList, getUserInfo, updateUserInfo, getPersonalData, removeFavourite, removeWatchList };

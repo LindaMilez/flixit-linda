@@ -16,6 +16,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Private from "./components/wrappers/PrivateComponent";
 import Profile from "./components/pages/auth/Profile";
 import Favourites from "./components/common/Favourites";
+import Pricing from "./components/pages/Pricing";
+import ContactUs from "./components/pages/ContactUs";
 
 function App() {
   
@@ -36,7 +38,7 @@ function App() {
         animation="border"
         role="status"
         size="sm"
-      />
+     />
     </Container>
   }
 
@@ -55,10 +57,12 @@ function App() {
             <Route path="/watchlist" element={<Favourites filter="watchlist" />} />
             <Route path="/favourites" element={<Favourites filter="favourites" />} />
             <Route path="/search/:searchTerm" element={<Home filter="search" />} />
-            <Route path="/movie/:movieId" element={<MovieDetails />}  />
-            <Route path="/login" element={<Anonymous><Login /></Anonymous>}  />
-            <Route path="/register" element={<Anonymous><Register /></Anonymous>}  />
-            <Route path="/profile" element={<Private><Profile /></Private>}  />
+            <Route path="/movie/:movieId" element={<MovieDetails />} />
+            <Route path="/login" element={<Anonymous><Login /></Anonymous>} />
+            <Route path="/register" element={<Anonymous><Register /></Anonymous>} />
+            <Route path="/profile" element={<Private><Profile /></Private>} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contactus" element={<ContactUs />} />
             {/* <Route path="/*" element={<NotFound />} />
             <Route path="/login" element={<Login />} /> */}
           </Routes>

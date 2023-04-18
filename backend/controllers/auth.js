@@ -74,7 +74,6 @@ const signInUser = (req, res, next) => {
   const user = req.body;
   const { email, password } = user;
   let signInUser = {};
-  console.log('RAM:', { email, password });
   User.findOne({ email, password })
     .then((matchingUser) => {
       signInUser = matchingUser;

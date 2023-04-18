@@ -1,10 +1,20 @@
 import { Link } from "react-router-dom";
-import { BsClockHistory, BsHeartFill, BsStarFill } from "react-icons/bs";
+import { BsHeartFill, BsStarFill } from "react-icons/bs";
 import useLogin from "../hooks/useLogin";
-import { FaBullhorn, FaClock, FaHandSparkles, FaSpeakerDeck, FaUserCircle } from "react-icons/fa";
+import { FaBullhorn, FaClock, FaDollarSign, FaPhoneVolume, FaUserCircle } from "react-icons/fa";
 
 const Navbar = ({ filter = "popular" }) => {
   const loginUser = useLogin();
+  
+  const getActiveStyles = (path) => {
+    if (path === filter) {
+      return {
+        backgroundColor: "#7e9ad03d"
+      }
+    }
+    return {};
+  };
+
   return (
     loginUser && (
       <nav
@@ -13,7 +23,7 @@ const Navbar = ({ filter = "popular" }) => {
       >
         <div className="position-sticky pt-3 sidebar-sticky">
           <ul className="nav flex-column">
-            <li className="nav-item">
+            <li className="nav-item rounded mx-2" style={getActiveStyles("popular")}>
               <Link to="/popular" className="nav-link d-flex align-items-center">
                 <span className="d-flex align-items-center">
                   <BsStarFill color="gold" />
@@ -21,7 +31,7 @@ const Navbar = ({ filter = "popular" }) => {
                 <span className="mx-2">Popular</span>
               </Link>
             </li>
-            <li className="nav-item">
+            <li className="nav-item rounded mx-2" style={getActiveStyles("upcoming")}>
               <Link to="/upcoming" className="nav-link d-flex align-items-center">
                 <span className="d-flex align-items-center">
                   <FaBullhorn color="red"/>
@@ -31,7 +41,7 @@ const Navbar = ({ filter = "popular" }) => {
             </li>
             {loginUser && (
               <>
-                <li className="nav-item">
+                <li className="nav-item rounded mx-2" style={getActiveStyles("watchlist")}>
                   <Link
                     to="/watchlist"
                     className="nav-link d-flex align-items-center"
@@ -42,7 +52,7 @@ const Navbar = ({ filter = "popular" }) => {
                     <span className="mx-2">Watch list</span>
                   </Link>
                 </li>
-                <li className="nav-item">
+                <li className="nav-item rounded mx-2" style={getActiveStyles("favourites")}>
                   <Link
                     to="/favourites"
                     className="nav-link d-flex align-items-center"
@@ -70,6 +80,28 @@ const Navbar = ({ filter = "popular" }) => {
                   <FaUserCircle />
                 </span>
                 <span className="mx-2">My Profile</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/pricing"
+                className="nav-link d-flex align-items-center"
+              >
+                <span className="d-flex align-items-center">
+                  <FaDollarSign />
+                </span>
+                <span className="mx-2">Pricing</span>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/contactus"
+                className="nav-link d-flex align-items-center"
+              >
+                <span className="d-flex align-items-center">
+                  <FaPhoneVolume />
+                </span>
+                <span className="mx-2">Contact Us</span>
               </Link>
             </li>
           </ul>

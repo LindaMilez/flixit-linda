@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { corsWithOptions } = require("../cors");
-const { getData, updateUserInfo, setFavourite, addToWatch, getFavourites, getWatchList, getUserInfo, removeFavourite, removeWatchList } = require("../controllers/data");
+const { getData, updateUserInfo, setFavourite, addToWatch, getFavourites, getWatchList, getUserInfo, removeFavourite, removeWatchList, saveEnquiry } = require("../controllers/data");
 const { isSignedIn, optionalSignIn } = require("../controllers/auth");
 const { getMovieRating, setMovieRating } = require("../controllers/rating");
 
@@ -38,6 +38,11 @@ dataRouter.route('/rating')
 dataRouter.route('/rating/:movieId')
   .options(corsWithOptions, (req, res) => res.sendStatus(200))
   .get(corsWithOptions, optionalSignIn, getMovieRating)
+
+
+dataRouter.route('/enquiry')
+  .options(corsWithOptions, (req, res) => res.sendStatus(200))
+  .post(corsWithOptions, saveEnquiry)
 
 
 module.exports = dataRouter;
